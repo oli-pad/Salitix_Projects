@@ -1,0 +1,4 @@
+This will store all .bat files to run built pythonic procedure's.
+
+Double click the File you want to use and it will run.
+

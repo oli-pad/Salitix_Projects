@@ -1,0 +1,6 @@
+Pre-requisites
+-pip install beautifulsoup4
+-pip install requests
+-chromedriver.exe
+-pip install Selenium
+

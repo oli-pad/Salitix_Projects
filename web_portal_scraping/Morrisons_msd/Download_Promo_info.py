@@ -8,13 +8,29 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from sys import argv
+import xlrd
+
 options = webdriver.ChromeOptions()
 options.add_argument("download.default_directory=C:/Documents, download.prompt_for_download=False")
 driver = webdriver.Chrome(options=options)
 
 script,email,password=argv
 
+df1 = pd.read_csv(r"C:\Users\Python\Desktop\projects\web_portal_scraping\Morrisons_msd\Agreements.csv")
 df2=pd.read_csv(r"C:\Users\Python\Desktop\projects\web_portal_scraping\Morrisons_msd\Morrisons_Promo_Schedule.csv")
+
+
+def check_promo():
+    promo_IDs=df1["ID"].unique()
+    for i in df2.index:
+        if df2["ID"].iloc[i] in promo_IDs:
+            return True
+    return False
+
+if check_promo() ==  False:
+    df2=pd.DataFrame(columns=["Item Number","Product Description","Vendor Product Number","Funding per Unit","Promotional Case Cost","Promtional Retail Price","Start Date","End Date","ID"])
+    df2.to_csv("Morrisons_Promo_Schedule.csv", index=False)
+
 Promo_df=pd.DataFrame(columns=["Item Number","Product Description","Vendor Product Number","Funding per Unit","Promotional Case Cost","Promtional Retail Price","Start Date","End Date","ID"])
 Promo_df=df2
 
@@ -76,5 +92,21 @@ def run(file):
                 scrape_page(df["ID"].iloc[i])
                 Promo_df.to_csv("Morrisons_Promo_Schedule.csv", index=False)
 
+def reformat_Dates(filepath):
+    df = pd.read_csv(filepath)
+    for i in df.index:
+        start = df["Start Date"].iloc[i]
+        try:
+            df["Start Date"].iloc[i] = start.split("/")[1] + "/" + start.split("/")[0] + "/" + start.split("/")[2]
+        except:
+            None
+        end = df["End Date"].iloc[i]
+        try:df["End Date"].iloc[i] = end.split("/")[1] + "/" + end.split("/")[0] + "/" + end.split("/")[2]
+        except:None
+        df.to_csv("Morrisons_Promo_Schedule_Dates.csv", index=False)
+
+
 
 run(r"C:\Users\Python\Desktop\projects\web_portal_scraping\Morrisons_msd\Agreements.csv")
+reformat_Dates(r"C:\Users\Python\Desktop\projects\web_portal_scraping\Morrisons_msd\Morrisons_Promo_Schedule.csv")
+

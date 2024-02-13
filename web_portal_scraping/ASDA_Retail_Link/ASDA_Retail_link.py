@@ -11,17 +11,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import os
 import getpass
+import pyodbc
 
 options = webdriver.ChromeOptions()
 options.add_argument("download.default_directory=C:/Documents, download.prompt_for_download=False")
 driver = webdriver.Chrome(options=options)
 
-#email=input("Please input e-mail >")
-email,password='',''
-#password=getpass.getpass("Please input password >")
-#data={'Username':[email],'Password':[password]}
-#df=pd.DataFrame(data)
-#df.to_csv("Oli_Oakes_Holiday_2021.csv")
 
 ASDA_Charges=pd.read_csv(r'C:\Users\Python\Desktop\ASDA Images\Scrubbed_Charges\ASDA_Charges.csv')
 

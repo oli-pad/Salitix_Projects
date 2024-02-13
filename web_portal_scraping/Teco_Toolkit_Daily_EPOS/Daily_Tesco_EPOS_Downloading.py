@@ -16,7 +16,7 @@ short_months={"January":"Jan","February":"Feb","March":"Mar","April":"Apr","May"
 Line = namedtuple('Line',"File_Name Status")
 report=[]
 
-script,number_of_days,start_num,client,index=argv
+
 
 ###This may need updating when changing where it is called###
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALSQL02;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
@@ -27,7 +27,7 @@ User_List=cursor.fetchall()
 conn.close()
 
 generate_arg='python Tesco_EPOS_Portal_Generate.py {} {} {} {}'
-download_arg=r'python C:\Users\python\Desktop\projects\web_portal_scraping\Teco_Toolkit_Daily_EPOS\Tesco_EPOS_Portal_Download.py {} {} {} {} {}'
+download_arg=r'python J:\Code\web_portal_scraping\Teco_Toolkit_Daily_EPOS\Daily_Tesco_EPOS_Downloading.py {} {} {} {}'
 
 def dates_for_download(n,client):
     date_list=[]
@@ -45,12 +45,9 @@ def dates_for_download(n,client):
         download_list.append('Tesco-Sales_and_stock-TPNB_Sales_x_store-'+str(j[2])+short_months[j[1]]+str(j[0])+" "+folder_name[client]+".xlsx")
     return date_list,download_list
 
-def download(client):
-    if client=='ALL':
-        for i in range(len(User_List)):
-            os.system(download_arg.format(User_List[i][0],User_List[i][1],User_List[i][2],number_of_days,start_num))
-    else:
-        os.system(download_arg.format(User_List[int(index)][0],User_List[int(index)][1],User_List[int(index)][2],number_of_days,start_num))
+def download():
+    for i in range(len(User_List)):
+        os.system(download_arg.format('7','28','ALL','200'))
 
 
 def expected_check_list():
@@ -111,8 +108,8 @@ def exceptions_report(expected_downloads,actual_downloads):
     df.to_csv('Exception_Reports/exceptions {}.csv'.format(date.today().strftime("%d_%m_%Y")),index=False)
 
 #read the folders and see if it has been fully Successful
-download(client)
-expected_downloads=[]
-actual_downloads=[]
-expected_check_list()
-downloaded_check_list()
+download()
+# expected_downloads=[]
+# actual_downloads=[]
+# expected_check_list()
+# downloaded_check_list()

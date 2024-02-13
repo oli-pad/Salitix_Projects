@@ -8,17 +8,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from sys import argv
+
 options = webdriver.ChromeOptions()
 options.add_argument("download.default_directory=C:/Documents, download.prompt_for_download=False")
 driver = webdriver.Chrome(options=options)
 
+df = pd.DataFrame(columns=['ID','Status'])
+df.to_csv("Agreements.csv",index=True)
+
 script,email,password=argv
+
+
+Months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+
 #list to search through for promotions
-searches=[ "2021-01","2021-02","2021-03","2021-04","2021-05",
-    "2021-06","2021-07","2021-08","2021-09","2021-10",
-    "2021-11","2021-12","2022-01","2022-02","2022-03","2022-04","2022-05",
-    "2022-06","2022-07","2022-08","2022-09","2022-10",
-    "2022-11","2022-12"]
+# CHANGE THE YEARS TO THE CURRENT YEAR AND THE NEXT YEAR
+searches=["2021-{i}".format(i=i) for i in Months]+["2022-{i}".format(i=i) for i in Months]
+
 #Function to open the log in page and follow  the nesercary steps.
 #There is a 2FA with these accounts so this will take that in account with input.
 def login(url,email,password):
@@ -27,9 +33,9 @@ def login(url,email,password):
     driver.find_element(By.ID,"identifierId").send_keys(email)
     driver.find_element(By.XPATH,"//span[text()='Next']").click()
     time.sleep(3)
-    #WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//input[@name='password']")))
-    #driver.find_element(By.XPATH,"//input[@name='password']").send_keys(password)
-    #driver.find_element(By.ID,"passwordNext").click()
+    # WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//input[@name='password']")))
+    # driver.find_element(By.XPATH,"//input[@name='password']").send_keys(password)
+    # driver.find_element(By.ID,"passwordNext").click()
     twoFA=input("2FA > ")
     if twoFA != "":
         driver.find_element(By.ID,"idvPin").send_keys(twoFA)

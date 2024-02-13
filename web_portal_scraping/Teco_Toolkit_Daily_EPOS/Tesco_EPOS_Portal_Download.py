@@ -18,14 +18,14 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 import csv
 
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(executable_path=r'J:\Code\web_portal_scraping\Teco_Toolkit_Daily_EPOS\chromedriver.exe')
 days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 months={'01':"January","02":"February","03":"March","04":"April","05":"May","06":"June","07":"July","08":"August","09":"September","10":"October","11":"November","12":"Decemeber"}
 short_months={"January":"Jan","February":"Feb","March":"Mar","April":"Apr","May":"May","June":"Jun","July":"Jul","August":"Aug","September":"Sep","October":"Oct","November":"Nov","Decemeber":"Dec"}
 folder_name={"BACARDI":"Bacardi","AB_INBEV":"Ab_Inbev","AG_BARR":"AG_Barr","BURTONS":"Burtons","COTY":"Coty","FINSBURY_FOODS":"Finsbury_Foods",
 "HEINEKEN":"Heineken","KETTLE_FOODS":"Kettle_foods","KINNERTON":"Kinnerton","KP_SNACKS":"KP_Snacks","MAXXIUM":"Maxxium","PLADIS":"Pladis",
-"PREMIER_FOODS":"Premier_foods","TILDA":"Tilda","WEETABIX":"Weetabix","YOUNGS":"Youngs","Princes":"Princes"}
-###Log in page####
+"PREMIER_FOODS":"Premier_foods","TILDA":"Tilda","WEETABIX":"Weetabix","YOUNGS":"Youngs","PRINCES":"Princes","LOREAL":"Loreal"}
+###Log in page####       
 Tesco_toolkit=r'https://partnerstoolkit.tesco.com/sign-in/?url=%2Ftoolkit%2F'
 EPOS_URL=r'https://partnerstoolkit.tesco.com/partner/reports/'
 
@@ -47,7 +47,7 @@ def download_data(client_name,username,password):
     time.sleep(5)
     print(selecting_downloads)
     download_files(selecting_downloads)
-    CSV_to_Excels()
+    #CSV_to_Excels()
     rename_relocate(client_name)
 
 def dates_for_download(n):
@@ -76,7 +76,7 @@ def login(url,username,password):
    driver.find_element(By.ID,"email-address").send_keys(username)
    driver.find_element(By.ID,"Password").send_keys(password)
    time.sleep(1)
-   driver.find_element(By.XPATH,"//button[@class='styled__BaseButton-rsekm1-0 styled__SecondaryButton-rsekm1-3 hEjuKw iVarcS beans-date-picker__calendar-button beans-button__container']").click()
+   driver.find_element(By.XPATH,"//button[@class='styled__StyledBaseButton-sc-1nxj3l4-0 gLwaFm ddsweb-button styled__StyledTextButton-sc-8hxn3m-0 caIwqa styled__StyledButton-cwlXRi fDqbBn ddsweb-button--text-button']").click()
 
 def download_files(selecting_downloads):
     time.sleep(20)
@@ -119,7 +119,7 @@ def rename_relocate(client_name):
                 if df.loc[j].at["Supplier"]==36308 or df.loc[j].at["Supplier"]==59365:
                     to_drop.append(j)
             df=df.drop(to_drop)
-            df.to_excel(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
+            df.to_csv(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
     elif client_name == "KETTLE_FOODS":
         for i in selecting_downloads:
             wb=load_workbook(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i))
@@ -131,18 +131,19 @@ def rename_relocate(client_name):
                 if df.loc[j].at["Supplier"]==61814 or df.loc[j].at["Supplier"]==59365:
                     to_drop.append(j)
             df=df.drop(to_drop)
-            df.to_excel(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
+            df.to_csv(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
     else:None
+    selecting_downloads=[i.replace(".xlsx",".csv") for i in selecting_downloads]
     for i in selecting_downloads:
-        try:
-            name=i.replace(".xlsx"," {}.xlsx".format(folder_name[client_name]))
-            if name not in file_list:
-                os.rename(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name))
-                shutil.move(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name),os.path.join(rename_path.format(folder_name[client_name]),name))
-            else:
-                os.rename(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name))
-                os.replace(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name),os.path.join(rename_path.format(folder_name[client_name]),name))
-        except:None
+        #try:
+        name=i.replace(".csv"," {}.csv".format(folder_name[client_name]))
+        if name not in file_list:
+            os.rename(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name))
+            shutil.move(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name),os.path.join(rename_path.format(folder_name[client_name]),name))
+        else:
+            os.rename(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name))
+            os.replace(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name),os.path.join(rename_path.format(folder_name[client_name]),name))
+        #except:None
 
 def dir_contents(path):
     file_list=[]

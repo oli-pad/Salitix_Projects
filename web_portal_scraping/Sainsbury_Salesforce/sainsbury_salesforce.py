@@ -5,8 +5,12 @@ import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 import pyautogui
 from sys import argv
+from pathlib import Path
+
 options = webdriver.ChromeOptions()
 options.add_argument("download.default_directory=C:/Documents, download.prompt_for_download=False")
 driver = webdriver.Chrome(options=options)
@@ -49,8 +53,11 @@ def NLF_download_list(soup,name):
             print(i.text[4:11])
             if i.text[4:8]!="2017":None
             name.append(i.text)
-            if status['NLF Stage'].values[0]=='E-form Completed':
-                NLF_href_list.append(i['href'])
+            try:
+                if status['NLF Stage'].values[0]=='E-form Completed':
+                    NLF_href_list.append(i['href'])
+            except:
+                print(i.text + " is not the correct html reference.")
     for i in soup.find_all('a'):
         if i.text=='Next Page>':
             next_page_href=i['href']
@@ -158,7 +165,7 @@ def PRF_download_list(soup,name):
     for i in soup.find_all('a'):
         if "PRF-" in i.text and i.text not in name:
             year=i.text
-            if year[4:11]=='2023-05': #or int(year[4:8])==2021:
+            if year[4:7]=='202': #or int(year[4:8])==2021:
                 status=PRF_df.loc[PRF_df['Promotion Form Name']==i.text]
                 name.append(i.text)
                 try:
@@ -204,15 +211,15 @@ new_line_form()
 logged_in_salesforce=driver.page_source
 soup = BeautifulSoup(logged_in_salesforce, "html.parser")
 NLF_download_pdf(soup)
-# driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
-# cost_price_change()
-# logged_in_salesforce=driver.page_source
-# soup = BeautifulSoup(logged_in_salesforce, "html.parser")
-# CPC_download_pdf(soup)
-# driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
-# promotion_form()
-# logged_in_salesforce=driver.page_source
-# soup = BeautifulSoup(logged_in_salesforce, "html.parser")
-# PRF_download_pdf(soup)
+driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
+cost_price_change()
+logged_in_salesforce=driver.page_source
+soup = BeautifulSoup(logged_in_salesforce, "html.parser")
+CPC_download_pdf(soup)
+driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
+promotion_form()
+logged_in_salesforce=driver.page_source
+soup = BeautifulSoup(logged_in_salesforce, "html.parser")
+PRF_download_pdf(soup)
 driver.close()
 driver.quit()

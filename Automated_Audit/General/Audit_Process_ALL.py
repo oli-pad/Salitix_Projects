@@ -11,7 +11,7 @@ Retailer_List=["ASD01","MOR01","SAI01","TES01","WAI01","ICE01","AMA01","NIS01","
 generate_arg='python Promo_reconciliation.py {} {} {} {} {}'
 
 Date_period_1='2021-01-01'
-Date_period_2='2023-04-01'
+Date_period_2='2024-02-01'
 
 for i in Alt_Client_List:
     for x in Retailer_List:

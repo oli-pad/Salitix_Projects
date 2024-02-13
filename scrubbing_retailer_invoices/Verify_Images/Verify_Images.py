@@ -17,8 +17,8 @@ dict= {
 'Maxxium':['019912','1001738','70564','3000000297'],
 'Pladis':['012172','1002917','1002917','3000002825'],
 'Premier Foods':['010364','1001986','130587','160819','3000000324'],
-'Princes':[''],
-'Tilda':[],
+'Princes':['021114','1001997','160175','3000001796'],
+'Tilda':['815196','1002830','200769','3000001455'],
 'Youngs':[],
 }
 
@@ -75,4 +75,4 @@ def remove_files_with_same_name(source_folder, destination_folder):
 
 
 
-main(r'W:\Audit\Pladis\Invoice Images\ImageStagingBay\Morrisons')
+main(r'W:\Audit\Princes\Invoice Images\ImageStagingBay\Sainsburys')

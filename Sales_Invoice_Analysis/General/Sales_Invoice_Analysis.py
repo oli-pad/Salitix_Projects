@@ -16,11 +16,24 @@ def remove_zero(string):
         string = string[1:]
     return string
 
-
-Calculation_Col=['PO_Number','Invoice_Number','Pricing_Date','Invoice_Date','Retailer_Product_Number','Vendor_Product_Number','Product_Description','Units_Per_Case','Qty','Unit_Price','Lines_Goods_Value','Current_Case_Cost','Difference','Claim']
+Calculation_Col=['PO_Number','Invoice_Number','Pricing_Date','Invoice_Date','Retailer_Product_Number','Vendor_Product_Number','Product_Description','Units_Per_Case','Qty','Unit_Price','Lines_Goods_Value','Product_Number','Current_Case_Cost','Difference','Claim']
 
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALSQL02;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = conn.cursor()
+
+#Get list of folder names, to be used for input
+retailer_folders = [f for f in os.listdir('W:\Admin\Claims Db\Pricing Claims')]
+retailer_folder = input("Which retailer? " + str(retailer_folders) + " >    ")
+while retailer_folder not in retailer_folders:
+    print("Invalid retailer, Create a New folder if you have acquired a new retailer.")
+    retailer_folder = input("Which retailer? " + str(retailer_folders) + " >    ")
+
+client_folders = [f for f in os.listdir('W:\Admin\Claims Db\Pricing Claims\\' + retailer_folder)]
+client_folder = input("Which client? " + str(client_folders) + " >  ")
+while client_folder not in client_folders:
+    print("Invalid client, Create a New folder if you have acquired a new client.")
+    client_folder = input("Which client? " + str(client_folders) + " >  ")
+
 
 #For User Input
 Client_Code=input("What's the Client Code?  >")
@@ -67,7 +80,7 @@ elif Retailer_Code=="COO01":
 ###
 
 ##format for folder structure where pricing is considered
-folder="W:\Audit\Bacardi\Documentation\Sainsbury_Salesforce\Price\{}"
+folder="W:\Audit\{}\Documentation\Sainsbury_Salesforce\Price\{}"
 
 #Functions for analysis
 #The following will search the price file for what the correct price on each individual invoice.
@@ -128,9 +141,8 @@ def Claim_Identifier(SI_A_df):
         SourceFile_pdf=i["SourceFile"].iloc[0]
         i.pop("SourceFile")
         if Retailer_Code=="SAI01":
-            i.columns=Calculation_Col
-            i.pop("PO_Number")
-            filename=i["Retailer_Product_Number"].iloc[0]+str(i["Pricing_Date"].iloc[0])[:10]+'.xlsx'
+            # i.columns=Calculation_Col
+            filename=i["product_number"].iloc[0]+str(i["pricing_date"].iloc[0])[:10]+'.xlsx'
             Evidence_list=Evidence_func(SourceFile_pdf)
             insert_image(filename,Evidence_list,i)
         elif Retailer_Code=="TES01":
@@ -148,7 +160,7 @@ def Claim_Identifier(SI_A_df):
             ws = wb.worksheets[1]
             for row in dataframe_to_rows(Evidence, index=False, header=True):
                 ws.append(row)
-            wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\Tesco\Bacardi",filename))
+            wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\{}\{}".format(retailer_folder,client_folder),filename))
         elif Retailer_Code=="COO01":
             # i.columns=Calculation_Col
             filename=i["product_number"].iloc[0]+str(i["pricing_date"].iloc[0])[:10]+'.xlsx'
@@ -164,20 +176,20 @@ def Claim_Identifier(SI_A_df):
             ws = wb.worksheets[1]
             for row in dataframe_to_rows(Evidence, index=False, header=True):
                 ws.append(row)
-            wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\COOP\Bacardi",filename))
+            wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\\{}\{}".format(retailer_folder,client_folder),filename))
 
 def Evidence_func(PDF):
     Evidence_list=[]
-    if os.path.exists(os.path.join(folder.format("NLF"),PDF)):
-        images = convert_from_path(os.path.join(folder.format("NLF"),PDF),poppler_path=pop_path)
+    if os.path.exists(os.path.join(folder.format(client_folder,"NLF"),PDF)):
+        images = convert_from_path(os.path.join(folder.format(client_folder,"NLF"),PDF),poppler_path=pop_path)
         for i in range(len(images)):# Save pages as images in the pdf
-            images[i].save(folder.format("NLF")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg', 'JPEG')
-            Evidence_list.append(folder.format("NLF")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg')
-    elif os.path.exists(os.path.join(folder.format("CPC"),PDF)):
-        images = convert_from_path(os.path.join(folder.format("CPC"),PDF),poppler_path=pop_path)
+            images[i].save(folder.format(client_folder,"NLF")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg', 'JPEG')
+            Evidence_list.append(folder.format(client_folder,"NLF")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg')
+    elif os.path.exists(os.path.join(folder.format(client_folder,"CPC"),PDF)):
+        images = convert_from_path(os.path.join(folder.format(client_folder,"CPC"),PDF),poppler_path=pop_path)
         for i in range(len(images)):# Save pages as images in the pdf
-            images[i].save(folder.format("CPC")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg', 'JPEG')
-            Evidence_list.append(folder.format("CPC")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg')
+            images[i].save(folder.format(client_folder,"CPC")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg', 'JPEG')
+            Evidence_list.append(folder.format(client_folder,"CPC")+"\\"+PDF.replace(".pdf","_")+ str(i) +'.jpg')
     return Evidence_list
 
 def insert_image(File,images,df):
@@ -191,8 +203,10 @@ def insert_image(File,images,df):
         ws = wb.worksheets[i+1]
         img = openpyxl.drawing.image.Image(images[i])
         ws.add_image(img,'A1')
-    wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\Sainsbury\Bacardi",File))
+    wb.save(os.path.join("W:\Admin\Claims Db\Pricing Claims\{}\{}".format(retailer_folder,client_folder),File))
 
 SI_Analysis_df=Insert_Correct_Case_Cost(Sales_Invoices_df,PF_df)
 Claim_Identifier(SI_Analysis_df)
 SI_Analysis_df.to_excel('Oli_Test.xlsx',index=False)
+
+os.system(r'python C:\Users\Python\Desktop\projects\Sales_Invoice_Analysis\General\Pricing_Claims.py "{}" "{}"'.format(retailer_folder,client_folder))

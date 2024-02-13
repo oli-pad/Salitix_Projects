@@ -16,8 +16,7 @@ from collections import namedtuple
 from sys import argv
 
 options = webdriver.ChromeOptions()
-print(options)
-driver = webdriver.Chrome(r'chromedriver.exe')
+driver = webdriver.Chrome(executable_path=r'J:\Code\web_portal_scraping\Teco_Toolkit_Daily_EPOS\chromedriver.exe',options=options)
 days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 months={'01':"January","02":"February","03":"March","04":"April","05":"May","06":"June","07":"July","08":"August","09":"September","10":"October","11":"November","12":"December"}
 short_months={"January":"Jan","February":"Feb","March":"Mar","April":"Apr","May":"May","June":"Jun","July":"Jul","August":"Aug","September":"Sep","October":"Oct","November":"Nov","December":"Dec"}
@@ -75,7 +74,7 @@ def login(url,username,password):
    driver.find_element(By.ID,"email-address").send_keys(username)
    driver.find_element(By.ID,"Password").send_keys(password)
    time.sleep(1)
-   driver.find_element(By.XPATH,"//button[@type='submit']").click()
+   driver.find_element(By.XPATH,"//button[@class='styled__StyledBaseButton-sc-1nxj3l4-0 gLwaFm ddsweb-button styled__StyledTextButton-sc-8hxn3m-0 caIwqa styled__StyledButton-cwlXRi fDqbBn ddsweb-button--text-button']").click()
 
 def setup_epos(url):
     time.sleep(5)

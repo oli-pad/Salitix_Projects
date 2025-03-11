@@ -4,7 +4,7 @@ import pandas as pd
 # importing sys
 from sys import argv
 
-Alt_Client_List=["CL001","CL002","CL003","CL005","CL012","CL014","CL020","CL023","CL027","CL029"]
+Alt_Client_List=["CL001","CL002","CL003","CL005","CL012","CL014","CL020","CL023","CL027","CL028","CL029"]
 
 Retailer_List=["ASD01","MOR01","SAI01","TES01","WAI01","ICE01","AMA01","NIS01","SUP01"]
 

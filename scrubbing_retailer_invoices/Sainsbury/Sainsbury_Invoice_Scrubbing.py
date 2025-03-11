@@ -72,6 +72,8 @@ def Promo_Information(text,Invoice_No,Invoice_Date):
         start=start_re.search(line)
         end=end_re.search(line)
         info_desc=Core_conv_re.search(line)
+        print (Invoice_No)
+        # 29/05 JR added print
         if start:
             Start_Date=start.group(5)+"/"+start.group(7)+"/"+start.group(9)
         if end:

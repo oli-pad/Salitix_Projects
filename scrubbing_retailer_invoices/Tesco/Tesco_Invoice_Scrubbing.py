@@ -149,6 +149,8 @@ def Promo_Information(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Inv
             End_Date=Start['End'].iloc[0]
             Store_Format,Invoice_Description,Acquisition_Ind=None,None,'Automatic'
             if VAT_Rate !='0' or VAT_Rate != '0.20' : VAT_Rate=20
+            if not Product_No.startswith('0'):
+                Product_No = '0' + Product_No
             lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
             check_list.append(Invoice_No)
             Product_No=None
@@ -186,6 +188,8 @@ def Promo_information_2020(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Typ
             result1=re.search("-(.*)-",Full_desc)
             result2=re.search("salessluppierid (\d+) - (\w+)")
             Store_Format,Invoice_Description,Acquisition_Ind=result1.group(1),result2.group(2),'Automatic'
+            if not Product_No.startswith('0'):
+                Product_No = '0' + Product_No
             lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
             check_list.append(Invoice_No)
             Promotion_No=None
@@ -227,6 +231,8 @@ def Promo_information_2020(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Typ
                     result1=re.search("(\d+)-(.*)-([ ]*)?(\d+)",Full_desc)
                     Invoice_Description=result1.group(2)
             Store_Format,Acquisition_Ind='Main','Automatic'
+            if not Product_No.startswith('0'):
+                Product_No = '0' + Product_No
             lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
             check_list.append(Invoice_No)
             Promotion_No=None
@@ -250,6 +256,8 @@ def Marketing_Information(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Type
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description="Look on Image"
+    if not Product_No.startswith('0'):
+        Product_No = '0' + Product_No
     lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
     check_list.append(Invoice_No)
 
@@ -271,6 +279,8 @@ def Fixed_Funding(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description=Deal_Type+' Look on image'
+    if not Product_No.startswith('0'):
+        Product_No = '0' + Product_No
     lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
     check_list.append(Invoice_No)
 
@@ -292,7 +302,13 @@ def Miscellaneous_Infomation(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_T
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description=Deal_Type+' Look on image'
+    try:
+        if not Product_No.startswith('0'):
+            Product_No = '0' + Product_No
+    except:
+        Product_No=None
     lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
+    print(lines)
     check_list.append(Invoice_No)
 
 def listdir_nohidden(path):
@@ -306,7 +322,9 @@ def data_extraction_Tesco(base_path):
             if filename=="desktop.ini":continue
             else:None
             text=Read_pdf(os.path.join(base_path,filename))
+            text = re.sub(r'Company Registered in England. Registered Office: Tesco House, Shire Park, Kestrel Way, Welwyn Garden City, AL7 1GA', '', text)
             SAL_Invoice_Type,Unit_Funding_Type,Deal_Type=Deal_Type_Check(os.path.join(base_path,filename),text)
+            print(SAL_Invoice_Type,Unit_Funding_Type,Deal_Type)
             Invoice_No,Invoice_Date,Reference_Number=Invoice_infomation(text)
             if Debit_or_credit(text):
                 if SAL_Invoice_Type=='PR':
@@ -330,7 +348,9 @@ def data_extraction_Tesco(base_path):
                 except:
                     os.replace(os.path.join(base_path,filename),os.path.join(base_path,Invoice_No+".pdf"))
             else:continue
-        except:None
+        except Exception as e:
+            print(e)
+            continue
     return pd.DataFrame(lines)
 
 def filter_list(list,inv_number):
@@ -364,6 +384,8 @@ def Credit_Information(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,In
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description=Deal_Type+' Look on image'
+    if not Product_No.startswith('0'):
+        Product_No = '0' + Product_No
     lines.append(Line(Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind))
     check_list.append(Invoice_No)
 
@@ -377,7 +399,7 @@ Salitix_Client_Number ="CL012"
 Salitix_Customer_Number ="TES01"
 
 ######TESTING#####
-#file for testing
-#base_path=r'C:\Users\Python\Desktop\Tesco test\Incomplete'
-#data_extraction_Tesco(base_path)
-#into_data_frame(lines)
+# file for testing
+base_path=r'W:/Audit/AG_Barr/Invoice Images'
+data_extraction_Tesco(base_path)
+into_data_frame(lines)

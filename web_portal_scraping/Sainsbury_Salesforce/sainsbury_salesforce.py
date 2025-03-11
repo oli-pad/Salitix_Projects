@@ -11,6 +11,8 @@ import pyautogui
 from sys import argv
 from pathlib import Path
 
+pyautogui.FAILSAFE = False
+
 options = webdriver.ChromeOptions()
 options.add_argument("download.default_directory=C:/Documents, download.prompt_for_download=False")
 driver = webdriver.Chrome(options=options)
@@ -78,16 +80,34 @@ def NLF_download_pdf(soup):
         try:
             driver.get(sainsbury_webpage+i)
         except:None
-        soup=BeautifulSoup(driver.page_source,"html.parser")
-        pdf_links=soup.find_all("input", {"value": "View PDF"})[0]
-        pdf=re.findall("([^']*)",str(pdf_links["onclick"]))
-        time.sleep(1)
-        driver.get(pdf[2])
-        time.sleep(2)
-        pyautogui.hotkey('ctrl','s')
-        time.sleep(2)
-        pyautogui.press('enter')
-        time.sleep(2)
+        try:   
+            soup=BeautifulSoup(driver.page_source,"html.parser")
+            pdf_links=soup.find_all("input", {"value": "View PDF"})[0]
+            pdf=re.findall("([^']*)",str(pdf_links["onclick"]))
+            time.sleep(1)
+            driver.get(pdf[2])
+            time.sleep(2)
+        # oo changes 03.10.24
+            # Extract text from the h2 element with class 'pageDescription'
+            page_description = soup.find('h2', class_='pageDescription').get_text(strip=True)
+            print(page_description)
+            # Get the current session cookies from Selenium
+            cookies = driver.get_cookies()
+
+            # Prepare the cookies for the requests library
+            session = requests.Session()
+            for cookie in cookies:
+                session.cookies.set(cookie['name'], cookie['value'])
+            
+            # Get the current URL of the new tab
+            pdf_url = driver.current_url
+            response = session.get(pdf_url)
+
+            # Save the PDF
+            with open( r"C:\Users\python\Downloads\{}.pdf".format(page_description), 'wb') as f:
+                f.write(response.content)
+        except Exception as e:
+            print(e)
 
 def cost_price_change():
     driver.find_element(By.XPATH,"//a[@title='Cost Price  Changes Tab']").click()
@@ -137,10 +157,25 @@ def CPC_download_pdf(soup):
         time.sleep(1)
         driver.get(pdf[2])
         time.sleep(2)
-        pyautogui.hotkey('ctrl','s')
-        time.sleep(2)
-        pyautogui.press('enter')
-        time.sleep(2)
+        # oo changes 03.10.24
+        # Extract text from the h2 element with class 'pageDescription'
+        page_description = soup.find('h2', class_='pageDescription').get_text(strip=True)
+        print(page_description)
+        # Get the current session cookies from Selenium
+        cookies = driver.get_cookies()
+
+        # Prepare the cookies for the requests library
+        session = requests.Session()
+        for cookie in cookies:
+            session.cookies.set(cookie['name'], cookie['value'])
+        
+        # Get the current URL of the new tab
+        pdf_url = driver.current_url
+        response = session.get(pdf_url)
+
+        # Save the PDF
+        with open( r"C:\Users\python\Downloads\{}.pdf".format(page_description), 'wb') as f:
+            f.write(response.content)
 
 def promotion_form():
     driver.find_element(By.XPATH,"//a[@title='Promotion Forms Tab']").click()
@@ -196,10 +231,25 @@ def PRF_download_pdf(soup):
         time.sleep(1)
         driver.get(pdf[2])
         time.sleep(2)
-        pyautogui.hotkey('ctrl','s')
-        time.sleep(2)
-        pyautogui.press('enter')
-        time.sleep(2)
+        # oo changes 03.10.24
+        # Extract text from the h2 element with class 'pageDescription'
+        page_description = soup.find('h2', class_='pageDescription').get_text(strip=True)
+        print(page_description)
+        # Get the current session cookies from Selenium
+        cookies = driver.get_cookies()
+
+        # Prepare the cookies for the requests library
+        session = requests.Session()
+        for cookie in cookies:
+            session.cookies.set(cookie['name'], cookie['value'])
+        
+        # Get the current URL of the new tab
+        pdf_url = driver.current_url
+        response = session.get(pdf_url)
+
+        # Save the PDF
+        with open( r"C:\Users\python\Downloads\{}.pdf".format(page_description), 'wb') as f:
+            f.write(response.content)
 
 sainsbury_salesforce_webpage_login="https://login.salesforce.com/secur/login_portal.jsp?orgId=00D20000000Kvi3&portalId=060200000000sY1"
 sainsbury_salesforce_webpage_login_response = requests.get(sainsbury_salesforce_webpage_login)
@@ -207,19 +257,27 @@ sainsbury_webpage='https://sainsburys-eforms.my.salesforce.com/'
 
 login(sainsbury_salesforce_webpage_login,"username",email,"password",password,"Login")
 
-new_line_form()
+# JR 21/02/25 TEMPORARILY commented out line below that calls function new_line_form() on line 77 because it caused an error due to nothing on that section
+# new_line_form()
 logged_in_salesforce=driver.page_source
 soup = BeautifulSoup(logged_in_salesforce, "html.parser")
-NLF_download_pdf(soup)
+# JR 21/02/25 TEMPORARILY commented out line below that calls function NLF_download_pdf() on line 77 because it caused an error due to nothing on that section
+# NLF_download_pdf(soup)
 driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
-cost_price_change()
-logged_in_salesforce=driver.page_source
-soup = BeautifulSoup(logged_in_salesforce, "html.parser")
-CPC_download_pdf(soup)
+# JR 14/01/25 commented out line below that calls function cost_price_change() on line 112 because it caused an error and we don't get pricing data from Sainsbury's
+# cost_price_change()
+#logged_in_salesforce=driver.page_source
+#soup = BeautifulSoup(logged_in_salesforce, "html.parser")
+#CPC_download_pdf(soup)
 driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
 promotion_form()
 logged_in_salesforce=driver.page_source
 soup = BeautifulSoup(logged_in_salesforce, "html.parser")
 PRF_download_pdf(soup)
-driver.close()
-driver.quit()
+# OO changes 23.02.25
+# adding this in incase the above doesn't close the driver.
+try:
+    driver.close()
+    driver.quit()
+except:
+    print("driver already closed")

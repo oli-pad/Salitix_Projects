@@ -18,14 +18,20 @@ df.to_csv("Agreements.csv",index=True)
 
 script,email,password=argv
 
-
-Months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+MonthsYear1 = ['10','11','12']
+MonthsYear2 = ['01','02','03','04','05','06','07','08','09','10','11']
+#JR 10/04 found solution to just scraping audit year (saves half the time to scrape). Original: Months = ['11','12','01','02','03','04','05','06','07','08','09','10']
+#JR 10/04 MonthsYear2 removed month 03, 04 from the list above as it's not in the Morrisons audit year for Finsbury.
+#Comment from OO 24.03, remove the month number that's causing the issue, it appears that 
+#it's 04 from the error message, this becasue of is in the log above but 04 is not...
+#JR 01/05 commented out MonthsYear1 for now because Pladis Morrisons only needs Jan 2022 
 
 #list to search through for promotions
 # CHANGE THE YEARS TO THE CURRENT YEAR AND THE NEXT YEAR
-searches=["2021-{i}".format(i=i) for i in Months]+["2022-{i}".format(i=i) for i in Months]
+searches=["2021-{i}".format(i=i) for i in MonthsYear1]+["2022-{i}".format(i=i) for i in MonthsYear2]
 
-#Function to open the log in page and follow  the nesercary steps.
+
+#Function to open the log in page and follow the necessary steps.
 #There is a 2FA with these accounts so this will take that in account with input.
 def login(url,email,password):
     #url for log on page.

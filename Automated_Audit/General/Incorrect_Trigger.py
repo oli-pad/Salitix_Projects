@@ -40,7 +40,7 @@ def Incorrect_Trigger(Promo_Schedule_df,Customer_Charges_df,EPOS_conn,EPOS_query
                     if j not in prod_date_unit_list and round(float(j),2) not in prod_date_unit_list:
                         CC_total=matched_cc_df["Quantity"].sum()
                         claim_total=(float(row["Epos_Funding_Amount"])-float(j))*float(CC_total)
-                        Exceptions_Report.append(["'Not Reviewed'","'Incorrect Promo Funding Trigger Rate'","'"+str(row["Promo_period"])+"'","'"+str(row["Retailer_Product_Number"])+"'","'"+str(claim_total)+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","NULL","'"+str(row["Retailer_promotion_number"])+"'",invoice_list])
+                        Exceptions_Report.append(["'Not Reviewed'","'Incorrect Unit Funding'","'"+str(row["Promo_period"])+"'","'"+str(row["Retailer_Product_Number"])+"'","'"+str(claim_total)+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","'"+str(row["Instore_Start_Date"])+"'","'"+str(row["Instore_End_Date"])+"'","NULL","'"+str(row["Retailer_promotion_number"])+"'",invoice_list])
                         #Claim_pack(str(row["Promo_period"])+" "+str(row["Retailer_Product_Number"])+" "+str(i),matched_cc_df,Promo_Schedule_df[Promo_Schedule_df["Retailer_Product_Number"]==row["Retailer_Product_Number"]],Client_Code,Retailer_Code,EPOS_df)
                         break
     return Exceptions_Report

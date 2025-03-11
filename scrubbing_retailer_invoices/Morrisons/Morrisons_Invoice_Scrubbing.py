@@ -38,6 +38,7 @@ total_re=re.compile(r'Sub Total -([0-9,.]*) GBP$')
 Promo_re=re.compile(r'^DEAL NO.: (\d+) Order')
 credit_re=re.compile(r'Sub Total ([0-9,.]*) GBP$')
 gross_re=re.compile(r'^Total -([0-9,.]*) GBP$')
+gross1_re=re.compile(r'Total -([0-9,.]*) GBP$')
 def Invoice_infomation(text):
     for line in text.split('\n'):
         line = " ".join(line.split())
@@ -47,6 +48,7 @@ def Invoice_infomation(text):
         credit=credit_re.search(line)
         promo=Promo_re.search(line)
         gross=gross_re.search(line)
+        gross1=gross1_re.search(line)
         if Inv:
             Invoice_No=Inv.group(1)
             if "DEAL" not in Invoice_No:
@@ -67,6 +69,8 @@ def Invoice_infomation(text):
             Promotion_No=promo.group(1)
         if gross:
             Gross_Amount=gross.group(1)
+        elif gross1:
+            Gross_Amount=gross1.group(1)
     Invoice_Totals_df.append(Line2(Invoice_No,Invoice_Total))
     Invoice_Totals_dict[Invoice_No]=Invoice_Total
     Gross_Total_dict[Invoice_No]=Gross_Amount
@@ -373,7 +377,7 @@ def Marketing_Information(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_Type
         if abs(VAT_Rate-0.2)<=0.05:
             VAT_Rate='20'
         else:
-            VAT_Rate='Look'
+            VAT_Rate='0'
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description="Look on Image"
@@ -399,7 +403,7 @@ def Miscellaneous_Information(text,file,SAL_Invoice_Type,Unit_Funding_Type,Deal_
         if abs(VAT_Rate-0.2)<=0.05:
             VAT_Rate='20'
         else:
-            VAT_Rate='Look'
+            VAT_Rate='0'
     Store_Format=None
     Acquisition_Ind='Automatic'
     Invoice_Description="Look on Image"
@@ -420,7 +424,6 @@ def data_extraction_morrisons(base_path):
             else:None
             text=Read_pdf(os.path.join(base_path,filename))
             SAL_Invoice_Type,Unit_Funding_Type,Deal_Type=Deal_Type_Check(os.path.join(base_path,filename),text)
-            #print(SAL_Invoice_Type)
             Invoice_No,Invoice_Date,Reference_Number,Promotion_No=Invoice_infomation(text)
             if SAL_Invoice_Type=='PR':
                 if Deal_Type=="COMPLEX DEAL - Vendor Funded Promotion":

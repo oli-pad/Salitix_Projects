@@ -1,0 +1,2 @@
+Salitix_Client_Number,Salitix_Customer_Number,SAL_Invoice_Type,Unit_Funding_Type,Reference_Number,Line_Description,Deal_Type,Invoice_No,Invoice_Date,Promotion_No,Product_No,Start_Date,End_Date,Quantity,Unit_Price,Net_Amount,VAT_Rate,Gross_Amount,Store_Format,Invoice_Description,Acquisition_Ind
+CL012,TES01,MS,,230915JIF63SJY-1,,Promotion Funding Deal,1002100936250,19/09/2023,,,19/09/2023,19/09/2023,,,281.12,0,281.12,,Promotion Funding Deal Look on image,Automatic

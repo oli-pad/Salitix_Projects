@@ -2,6 +2,10 @@ import os
 from Defining_Retailer import Defining_Retailer
 import shutil
 
+from sys import argv
+
+script,Client=argv
+
 #List of things in the Audit folder.
 directory_list = [ item for item in os.listdir(r"W:\Audit")]
 
@@ -11,12 +15,13 @@ invoice_image_path="W:\Audit\{}\Invoice Images\{}"
 #Folders to be used for process.
 audit_folder_list=[item for item in directory_list if os.path.exists(invoice_image_folder_path.format(item))]
 
-#User input
-print(audit_folder_list)
-Client=str(input("Please select a client from above or type 'all'   >   "))
-while Client!="all" and Client not in audit_folder_list:
+if Client=='manual':
+    #User input
+    print(audit_folder_list)
     Client=str(input("Please select a client from above or type 'all'   >   "))
-   
+    while Client!="all" and Client not in audit_folder_list:
+        Client=str(input("Please select a client from above or type 'all'   >   "))
+
 if Client=='all':
     audit_folder_list.remove('Export com')
     client_list=audit_folder_list

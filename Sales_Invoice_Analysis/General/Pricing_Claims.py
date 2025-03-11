@@ -9,7 +9,7 @@ script, retailer_folder,client_folder = sys.argv
 Exceptions_conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALAZSQL;DATABASE=Salitix_Claims_Database;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = Exceptions_conn.cursor()
 
-ACR_Ftd = "SELECT * FROM [Salitix_Claims_Database].[dbo].[ACR_Automated_Claim_Report_Ftd] WHERE Claim_Category = 'Pricing';"
+ACR_Ftd = "SELECT * FROM [Salitix_Claims_Database].[dbo].[ACR_Automated_Claim_Report_Ftd] WHERE Claim_Category = 'Cost Price Discrepancy';"
 ACR_Ftd_df=pd.read_sql(ACR_Ftd,Exceptions_conn)
 
 dict={"Ab_Inbev":"CL023","AG Barr":"CL005","Bacardi":"CL001"

@@ -16,11 +16,11 @@ from collections import namedtuple
 from sys import argv
 
 options = webdriver.ChromeOptions()
-driver = webdriver.Chrome(executable_path=r'J:\Code\web_portal_scraping\Teco_Toolkit_Daily_EPOS\chromedriver.exe',options=options)
+driver = webdriver.Chrome(options=options)
 days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 months={'01':"January","02":"February","03":"March","04":"April","05":"May","06":"June","07":"July","08":"August","09":"September","10":"October","11":"November","12":"December"}
 short_months={"January":"Jan","February":"Feb","March":"Mar","April":"Apr","May":"May","June":"Jun","July":"Jul","August":"Aug","September":"Sep","October":"Oct","November":"Nov","December":"Dec"}
-folder_name={"BACARDI":"Bacardi","AB_Inbev":"Ab_Inbev","AG_BARR":"AG_Barr","BURTONS":"Burtons","COTY":"Coty","FINSBURY_FOODS":"Finsbury_Foods",
+folder_name={"BACARDI":"Bacardi","AB_Inbev":"Ab_Inbev","AG_BARR":"AG_Barr","COTY":"Coty","FBC":"Fbc","FINSBURY_FOODS":"Finsbury_Foods",
 "HEINEKEN":"Heineken","KETTLE_FOODS":"Kettle_foods","KINNERTON":"Kinnerton","KP_SNACKS":"KP_Snacks","MAXXIUM":"Maxxium","PLADIS":"Pladis",
 "PREMIER_FOODS":"Premier_foods","TILDA":"Tilda","WEETABIX":"Weetabix","YOUNGS":"Youngs"}
 ###Log in page####
@@ -74,7 +74,7 @@ def login(url,username,password):
    driver.find_element(By.ID,"email-address").send_keys(username)
    driver.find_element(By.ID,"Password").send_keys(password)
    time.sleep(1)
-   driver.find_element(By.XPATH,"//button[@class='styled__StyledBaseButton-sc-1nxj3l4-0 gLwaFm ddsweb-button styled__StyledTextButton-sc-8hxn3m-0 caIwqa styled__StyledButton-cwlXRi fDqbBn ddsweb-button--text-button']").click()
+   driver.find_element(By.XPATH,"//button[@class='styled__StyledTextButton-sc-8hxn3m-0 iaukuD styled__StyledButton-NtoXt iBoFMG ddsweb-button ddsweb-button--text-button']").click()
 
 def setup_epos(url):
     time.sleep(5)
@@ -85,9 +85,9 @@ def setup_epos(url):
     driver.find_element(By.ID,"selectedDate").click()
 
 def choose_date(dd,mm,yyyy,day):
-    WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//button[@class='styled__BaseButton-rsekm1-0 styled__SecondaryButton-rsekm1-3 hEjuKw iVarcS beans-date-picker__calendar-button beans-button__container']")))
+    WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//button[@class='styled__StyledIconButton-sc-rnkc1-1 beNJoG ddsweb-date-picker__calendar-button ddsweb-button ddsweb-button--icon-button']")))
     time.sleep(5)
-    driver.find_element(By.XPATH,"//button[@class='styled__BaseButton-rsekm1-0 styled__SecondaryButton-rsekm1-3 hEjuKw iVarcS beans-date-picker__calendar-button beans-button__container']").click()
+    driver.find_element(By.XPATH,"//button[@class='styled__StyledIconButton-sc-rnkc1-1 beNJoG ddsweb-date-picker__calendar-button ddsweb-button ddsweb-button--icon-button']").click()
     try:
         l= driver.find_element(By.XPATH,"//td[@aria-label='Selected date: "+dd+" "+mm+", "+yyyy+", "+day+"']")
         s= l.text
@@ -102,8 +102,8 @@ def choose_date(dd,mm,yyyy,day):
             time.sleep(5)
             driver.find_element(By.XPATH,"//td[@aria-label='Selected date: "+dd+" "+mm+", "+yyyy+", "+day+"']").click()
     time.sleep(3)
-    WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//button[@class='styled__BaseButton-rsekm1-0 styled__PrimaryButton-rsekm1-2 jChbeY geeWOF beans-button__container']")))
-    driver.find_element(By.XPATH,"//button[@class='styled__BaseButton-rsekm1-0 styled__PrimaryButton-rsekm1-2 jChbeY geeWOF beans-button__container']").click()
+    WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//button[@class='styled__StyledTextButton-sc-8hxn3m-0 iaukuD ddsweb-button ddsweb-button--text-button']")))
+    driver.find_element(By.XPATH,"//button[@class='styled__StyledTextButton-sc-8hxn3m-0 iaukuD ddsweb-button ddsweb-button--text-button']").click()
     time.sleep(1)
 
 def logoff():

@@ -163,6 +163,8 @@ def sainos_promo_reader(file,data):
                     Epos_Funding_Amount=Promo_Trigger_Fund.group(5)+"."+Promo_Trigger_Fund.group(6)
                     Trigger_Funding_Amount=0
                     Retailer_Product_Number=Promo_Trigger_Fund.group(3)
+                    if 'Retail_Promo_Comments' not in locals():
+                        Retail_Promo_Comments = "Not Found"
                     Lines.append(Line(Deleted,Post_Deletion_ID,Retailer_promotion_number_1,Salitix_client_number,Salitix_customer_number,Retailer_promotion_number_2,Retailer_promotion_description,Promo_period,Promo_funding_type,Instore_Start_Date,Instore_End_Date,Buy_In_Start_Date,Buy_In_End_Date,Outer_Case_Code,Retailer_Product_Number,Retailer_Product_Number_2,Retailer_Product_Description,Retailer_Product_Unit_Size,Retailer_Case_Size,Retailer_product_vat_rate,Feature_space_fee,Positioning_fee,Standard_Selling_Price,Promotional_Selling_Price,Standard_Case_Cost,Promotional_Case_Cost,Standard_margin_perc,Promo_margin_perc,Promo_Retro_Funding_Case,Promo_Retro_Start_Date,Promo_Retro_End_Date,Retailer_Promo_Funding_Perc,Supplier_Promo_Funding_Perc,Trigger_Unit_Qty,Trigger_Funding_Amount,Epos_Funding_Amount,Standard_Volume_Forecast,Promo_Volume_Forecast,Retail_Promo_Comments,Data_Source))
                 #    locate=df.loc[df['Retailer_Product_Number']==int(Retailer_Product_Number)]
                 #    Retailer_Product_Description=locate['Retailer_Product_Description'].iloc[0]

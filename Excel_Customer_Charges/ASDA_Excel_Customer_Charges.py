@@ -2,13 +2,16 @@ import pandas as pd
 from collections import namedtuple
 import os
 import pyodbc
+from sys import argv
 
-Client_code_dic={'Ab Inbev':"CL023", 'AG Barr':"CL005", 'Bacardi':"CL001",
+script,client=argv
+
+Client_code_dic={'Ab_Inbev':"CL023", 'AG_Barr':"CL005", 'Bacardi':"CL001",
     'Burtons':"CL003", 'Coty':"CL027",'Finsbury_Foods':"CL014",
     'Foxs':"CL999", 'Heineken':"CL028", 'Kettle Foods':"CL026", 
     'Kinnerton':"CL022", 'Maxxium':"CL012", 'Pladis':"CL002", 
-    'Premier Foods':"CL020", 'Princes':"CL029", 'Tilda':"CL013", 'Youngs':"CL004",
-    'Loreal':'CL030'}
+    'Premier_Foods':"CL020", 'Princes':"CL029", 'Tilda':"CL013", 'Youngs':"CL004",
+    'Loreal':'CL031'}
 
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALSQL02;DATABASE=Salitix_Scrubbed_Data_Staging;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = conn.cursor()
@@ -23,17 +26,18 @@ invoice_image_path="W:\Audit\{}\Invoice Images\ImageStagingBay\{}"
 #Folders to be used for process.
 audit_folder_list=[item for item in directory_list if os.path.exists(invoice_image_folder_path.format(item))]
 
-#User input
-print(audit_folder_list)
-Client=str(input("Please select a client from above or type 'all'   >   "))
-while Client!="all" and Client not in audit_folder_list:
+if client=="manual":
+    #User input
+    print(audit_folder_list)
     Client=str(input("Please select a client from above or type 'all'   >   "))
+    while Client!="all" and Client not in audit_folder_list:
+        Client=str(input("Please select a client from above or type 'all'   >   "))
    
-if Client=='all':
+if client=='all':
     audit_folder_list.remove('Export com')
     client_list=audit_folder_list
 else:
-    client_list=[Client]
+    client_list=[client]
 
 #This is created by the Scrubbing process, a header level overview of the charges.
 ASDA_Charges=pd.read_sql(sql_command.format(Client_code_dic[client_list[0]]),conn)

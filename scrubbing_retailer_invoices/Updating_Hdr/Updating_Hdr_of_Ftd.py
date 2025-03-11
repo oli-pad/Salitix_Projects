@@ -3,18 +3,39 @@ import pyodbc
 import pandas as pd
 # importing sys
 import sys
+from sys import argv
 
+script,client,retailer = argv
+
+Client_code_dic={'Ab_Inbev':"CL023", 'AG_Barr':"CL005", 'Bacardi':"CL001",
+    'Burtons':"CL003", 'Coty':"CL027",'Finsbury_Foods':"CL014",
+    'Foxs':"CL999", 'Heineken':"CL028", 'Kettle Foods':"CL026", 
+    'Kinnerton':"CL022", 'Maxxium':"CL012", 'Pladis':"CL002", 
+    'Premier_Foods':"CL020", 'Princes':"CL029", 'Tilda':"CL013", 'Youngs':"CL004",
+    'Loreal':'CL031'}
+Retailer_Code_dic={'Tesco':"TES01", 'ASDA':"ASD01", 'Sainsbury':"SAI01", 'Morrisons':"MOR01"}
+# 19/04 JR Changed 'Sainsburys' to 'Sainsbury' in Retailer_Code_dic because that's the actual name of the retailer in the flask form
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALAZSQL;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = conn.cursor()
 
 CC_conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALAZSQL;DATABASE=Salitix_Scrubbed_Data_Formatted;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 CC_cursor = CC_conn.cursor()
 
-Client_Code=input("What's the Client Code?  >")
-Retailer_Code=input("What's the Retailer Code?  >")
-cursor.execute("SELECT Salitix_client_number,Salitix_client_name,Db FROM [Salitix_Master_Data].[dbo].[salitix_client_numbers] WHERE Salitix_client_number='"+Client_Code+"';")
-User_List=cursor.fetchall()
-Client_Db=User_List[0][2]
+if client=="manual":
+    Client_Code=input("What's the Client Code?  >")
+    Retailer_Code=input("What's the Retailer Code?  >")
+    cursor.execute("SELECT Salitix_client_number,Salitix_client_name,Db FROM [Salitix_Master_Data].[dbo].[salitix_client_numbers] WHERE Salitix_client_number='"+Client_Code+"';")
+    User_List=cursor.fetchall()
+    Client_Db=User_List[0][2]
+else:
+    # print(client,retailer)
+    # print(Retailer_Code_dic)
+    Client_Code=Client_code_dic[client]
+    Retailer_Code=Retailer_Code_dic[retailer]
+    cursor.execute("SELECT Salitix_client_number,Salitix_client_name,Db FROM [Salitix_Master_Data].[dbo].[salitix_client_numbers] WHERE Salitix_client_number='"+Client_Code+"';")
+    User_List=cursor.fetchall()
+    print(User_List)
+    Client_Db=User_List[0][2]
 
 Client_conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALAZSQL;DATABASE='+Client_Db+';Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 Client_cursor = Client_conn.cursor()
@@ -40,6 +61,7 @@ def update(HDR_No,Inv_No):
 
 
 for i in HDR_list:
+    print(i)
     if i in CC_list:
         continue
     if Retailer_Code=="TES01":
@@ -55,6 +77,12 @@ for i in HDR_list:
         if i.replace("P-","") in CC_list:
             update(i,i.replace("P-",""))
     elif Retailer_Code=="SAI01":
+        i_replace_new=i.replace(" _ ","-")
+        if i_replace_new in CC_list:
+            update(i,i_replace_new)
+        i_replace_new1=i.replace(" _ ","_")
+        if i_replace_new1 in CC_list:
+            update(i,i_replace_new1)
         i_replace=i.replace("/","_")
         if i_replace in CC_list:
             update(i,i_replace)

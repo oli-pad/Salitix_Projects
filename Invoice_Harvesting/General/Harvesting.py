@@ -2,7 +2,11 @@ import os
 from sys import argv
 import shutil
 
-script, Client = argv
+script, Client , Customer = argv
+
+#25/11/2024 JR - Replaced AG_Barr with AG Barr
+#if Client == "AG_Barr":
+    #Client = Client.replace("_"," ")
 
 Invoice_Image_Folder_path_2="W:\Audit\{}\Invoice Images\{}"
 Invoice_Image_Folder_path="W:\Audit\{}\Invoice Images\EmailStagingBay"
@@ -16,6 +20,15 @@ Retailer_List = [item for item in os.listdir(Invoice_Image_Folder_path.format(Cl
 # if they don't run a script
 
 print("Running Invoice Harvesting Script for {}".format(Client))
+
+if Customer == "Asda":
+    Retailer_List = ["Asda"]
+elif Customer == "Tesco":
+    Retailer_List = ["Tesco"]
+elif Customer == "Sainsbury":
+    Retailer_List = ["Sainsburys"]
+elif Customer == "Morrisons":
+    Retailer_List = ["Morrisons"]
 
 for Retailer in Retailer_List:
     if Retailer == "Asda":

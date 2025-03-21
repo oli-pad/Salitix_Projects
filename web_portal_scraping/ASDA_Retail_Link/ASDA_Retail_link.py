@@ -88,11 +88,11 @@ def download_excel(agreement,start_date,end_date):
         driver.switch_to.frame(frame)
         soup=BeautifulSoup(driver.page_source,"html.parser")
         input=soup.find_all(class_="urEdf2TxtEnbl lsEdfLeftBrdRadius lsEdf3TxtHlpBtn urBorderBox")
-        driver.find_element(By.ID,input[0].get('id')).send_keys(start_date[8:]+"."+start_date[5:7]+"."+start_date[:4])
+        driver.find_element(By.ID,input[0].get('id')).send_keys(start_date[0:2]+"."+start_date[3:5]+"."+start_date[6:10]) # 20/03 JR changed date character locations to type
         time.sleep(2)
         # driver.find_element(By.ID,"WD02F9").send_keys(start_date[:2]+"."+start_date[3:5]+"."+start_date[6:])
         # time.sleep(2)
-        driver.find_element(By.ID,input[1].get('id')).send_keys(end_date[8:]+"."+end_date[5:7]+"."+end_date[:4])
+        driver.find_element(By.ID,input[1].get('id')).send_keys(end_date[0:2]+"."+end_date[3:5]+"."+end_date[6:10]) # 20/03 JR changed date character locations to type
         time.sleep(2)
         driver.find_element(By.XPATH,"//a[@title='OK ']").click()
         time.sleep(30)

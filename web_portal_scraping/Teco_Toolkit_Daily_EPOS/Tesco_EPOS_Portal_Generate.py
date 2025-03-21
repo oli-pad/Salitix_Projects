@@ -101,7 +101,7 @@ def choose_date(dd,mm,yyyy,day):
             driver.find_element(By.XPATH,"//button[@aria-label='Previous month']").click()
             time.sleep(5)
             driver.find_element(By.XPATH,"//td[@aria-label='Selected date: "+dd+" "+mm+", "+yyyy+", "+day+"']").click()
-    time.sleep(3)
+    time.sleep(70) # JR changed sleep time to 70 because sometimes the button would appear but not clickable until a minute later. This would cause the script to "skip" some days for generating reports.
     WebDriverWait(driver,150).until(EC.presence_of_element_located((By.XPATH,"//button[@class='styled__StyledTextButton-sc-8hxn3m-0 iaukuD ddsweb-button ddsweb-button--text-button']")))
     driver.find_element(By.XPATH,"//button[@class='styled__StyledTextButton-sc-8hxn3m-0 iaukuD ddsweb-button ddsweb-button--text-button']").click()
     time.sleep(1)

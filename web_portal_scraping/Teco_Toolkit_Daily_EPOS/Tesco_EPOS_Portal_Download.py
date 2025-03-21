@@ -99,6 +99,7 @@ def download_files(selecting_downloads):
     soup = BeautifulSoup(driver.page_source,"html.parser")
     links=soup.find_all("a") # Links is HTML code that starts with "a" which are the "a class" links.
     selecting_downloads=[i.replace(".xlsx",".csv") for i in selecting_downloads] # Changes .xlsx to .csv so code can find it in HTML code
+    #DownloadCount = 0 # JR added int variable to fix bug. If the portal loads without loading generated file links for download, the "links" variable won't hold any values and the code will skip the while loop.
     for i in links: # Loops through every "a class" HTML code (download links)
         if i.text in selecting_downloads: # if the text of the HTML code is in the selecting_downloads list, it will enter the while loop
             while True:
@@ -109,6 +110,7 @@ def download_files(selecting_downloads):
                     time.sleep(70)
                     driver.find_element(By.ID,i.get('id')) # Waits for the portal to still be on the same page. If not, it will raise an exception.
                     print ("Portal still on the same page") # TEMP FOR DEBUG
+                    #DownloadCount += 1
                     break # iterates to next i element
                 except Exception as e:
                     print("Error in downloading file " + i.text)
@@ -117,6 +119,8 @@ def download_files(selecting_downloads):
                     WebDriverWait(driver,30).until(EC.presence_of_element_located((By.ID,"downloadedReports")))
                     driver.find_element(By.ID,'downloadedReports').click()
                     continue # stays on this i element until the file is downloaded
+        #if DownloadCount == 0:
+        #    download_files(selecting_downloads) # If no files are downloaded, it will call the function again to try to download the files again
 
 def CSV_to_Excels():
     time.sleep(40)
@@ -146,25 +150,26 @@ def rename_relocate(client_name):
     #                 to_drop.append(j)
     #         df=df.drop(to_drop)
     #         df.to_csv(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
-    if client_name == "KETTLE_FOODS":
-        for i in selecting_downloads:
-            wb=load_workbook(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i))
-            ws=wb['Store Level LDI'].values
-            columns = next(ws)[0:]
-            df = pd.DataFrame(ws,columns=columns)
-            to_drop=[]
-            for j in df.index:
-                if df.loc[j].at["Supplier"]==61814 or df.loc[j].at["Supplier"]==59365:
-                    to_drop.append(j)
-            df=df.drop(to_drop)
-            df.to_csv(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
-    else:None
+    # if client_name == "KETTLE_FOODS":
+    #     for i in selecting_downloads:
+    #         wb=load_workbook(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i))
+    #         ws=wb['Store Level LDI'].values
+    #         columns = next(ws)[0:]
+    #         df = pd.DataFrame(ws,columns=columns)
+    #         to_drop=[]
+    #         for j in df.index:
+    #             if df.loc[j].at["Supplier"]==61814 or df.loc[j].at["Supplier"]==59365:
+    #                 to_drop.append(j)
+    #         df=df.drop(to_drop)
+    #         df.to_csv(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),sheet_name='Store Level LDI',index=False)
+    # else:None
     selecting_downloads=[i.replace(".xlsx",".csv") for i in selecting_downloads]
     for i in selecting_downloads:
         #try:
         print("i= ",i)
         name=i.replace(".csv"," {}.csv".format(folder_name[client_name])) # Puts client name at the end of file name
         print("name= ",name)
+        time.sleep(10)
         if name not in file_list:
             os.rename(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),i),os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name)) # Replace the file name with the new name (i with name)
             shutil.move(os.path.join(os.path.join(os.path.expanduser('~'), 'Downloads'),name),os.path.join(rename_path.format(folder_name[client_name]),name)) # Move the file to the new folder Z:\{}\EPOS Store\Tesco\Daily

@@ -51,9 +51,6 @@ CC_list=Customer_Charges_df["Invoice_No"].tolist()
 CC_all_Query="SELECT * FROM [Salitix_Scrubbed_Data_Formatted].[dbo].[Scrubbed_Customer_Charges_Ftd] WHERE Salitix_customer_number='"+Retailer_Code+"' AND Salitix_client_number ='"+Client_Code+"'"
 Customer_Charges_all_df=pd.read_sql(CC_all_Query,CC_conn)
 
-HDR_Charges_df.to_csv("oli.csv")
-Customer_Charges_df.to_csv('oliiii.csv')
-
 def update(HDR_No,Inv_No):
     update_Query="UPDATE [Salitix_Scrubbed_Data_Formatted].[dbo].[Scrubbed_Customer_Charges_Ftd] SET HDR_Invoice_Number = '"+HDR_No+"' WHERE Invoice_No = '"+Inv_No+"';"
     CC_cursor.execute(update_Query)

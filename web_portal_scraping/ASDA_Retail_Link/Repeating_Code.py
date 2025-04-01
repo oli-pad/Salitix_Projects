@@ -11,7 +11,7 @@ script, start_date, end_date = sys.argv
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALSQL02;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = conn.cursor()
 
-rows = cursor.execute(f"SELECT * FROM [Salitix_Scrubbed_Data_Staging].[dbo].[Scrubbed_ASDA_Customer_Charges_Stg] WHERE SAL_Invoice_Type = 'PR' and Invoice_Date >= '{start_date}' and Invoice_Date <= '{end_date}';")
+rows = cursor.execute(f"SELECT * FROM [Salitix_Scrubbed_Data_Staging].[dbo].[Scrubbed_ASDA_Customer_Charges_Stg] WHERE SAL_Invoice_Type = 'PR' and Invoice_Date >= '{start_date}' and Invoice_Date <= '{end_date}' and [Salitix_client_number] = 'CL012';")
 ASDA_Charges=cursor.fetchall()
 
 with open(r'C:\Users\Python\Desktop\ASDA Images\Scrubbed_Charges\ASDA_Charges.csv', 'w', newline='') as csvfile:

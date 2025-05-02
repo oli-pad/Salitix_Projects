@@ -11,7 +11,7 @@ script, start_date, end_date = sys.argv
 conn = pyodbc.connect('DRIVER=SQL Server;SERVER=UKSALSQL02;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers')
 cursor = conn.cursor()
 
-rows = cursor.execute(f"SELECT * FROM [Salitix_Scrubbed_Data_Staging].[dbo].[Scrubbed_ASDA_Customer_Charges_Stg] WHERE SAL_Invoice_Type = 'PR' and Invoice_Date >= '{start_date}' and Invoice_Date <= '{end_date}' and [Salitix_client_number] = 'CL012';")
+rows = cursor.execute(f"SELECT * FROM [Salitix_Scrubbed_Data_Staging].[dbo].[Scrubbed_ASDA_Customer_Charges_Stg] WHERE SAL_Invoice_Type = 'PR' and Invoice_Date >= '{start_date}' and Invoice_Date <= '{end_date}'")
 ASDA_Charges=cursor.fetchall()
 
 with open(r'C:\Users\Python\Desktop\ASDA Images\Scrubbed_Charges\ASDA_Charges.csv', 'w', newline='') as csvfile:
@@ -32,6 +32,6 @@ cursor.execute("SELECT Salitix_client_number,salitix_client_name,user_name,passw
 
 User_List=cursor.fetchall()
 
-for i in range(50):
-    print(f"Attempt {i+1} out of 50")
+for i in range(100):
+    print(f"Attempt {i+1} out of 100")
     os.system(r'python C:\Users\python\Desktop\projects\web_portal_scraping\ASDA_Retail_Link\ASDA_Retail_link.py "{}" "{}"'.format(User_List[0][2], User_List[0][3]))

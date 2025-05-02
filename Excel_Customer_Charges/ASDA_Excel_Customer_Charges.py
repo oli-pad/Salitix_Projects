@@ -4,6 +4,8 @@ import os
 import pyodbc
 from sys import argv
 
+# This python code is used for "Asda Only: Load"
+
 script,client=argv
 
 Client_code_dic={'Ab_Inbev':"CL023", 'AG_Barr':"CL005", 'Bacardi':"CL001",

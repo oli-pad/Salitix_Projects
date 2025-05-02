@@ -6,6 +6,17 @@ import re
 import pdfplumber
 import pandas as pd
 from collections import namedtuple
+import importlib.util
+
+# Dynamically import the logger_utils module
+logger_utils_path = r"C:\Users\python\Desktop\projects\scrubbing_retailer_invoices\logger_utils.py"
+spec = importlib.util.spec_from_file_location("logger_utils", logger_utils_path)
+logger_utils = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(logger_utils)
+
+# Configure logging
+MASTER_DB_CONN_STR = r'DRIVER=SQL Server;SERVER=UKSALAZSQL;DATABASE=Salitix_Master_Data;Trusted_Connection=Yes;UID=SALITIX\SQLSalitixAuditorUsers'
+logger = logger_utils.setup_database_logger(MASTER_DB_CONN_STR, __name__)
 
 #This will be the names of the columns that from the DataFrame.
 Line = namedtuple('Line','Salitix_Client_Number Salitix_Customer_Number SAL_Invoice_Type Unit_Funding_Type Reference_Number Line_Description Deal_Type Invoice_No Invoice_Date Promotion_No Product_No Start_Date End_Date Quantity Unit_Price Net_Amount VAT_Rate Gross_Amount Store_Format Invoice_Description Acquisition_Ind')
@@ -54,16 +65,22 @@ def Deal_Type_Check(file,text):
         line = " ".join(line.split())
         #print(line)
         SAL=SAL_re.search(line)
+        print ("SAL = ")
+        print (SAL)
         SAL_blank=SAL_re_empty.search(line)
         if SAL:
             Deal_Type=SAL.group(3)
            # print(Deal_Type)
             Start=DEAL_CSV.loc[DEAL_CSV['Deal_type']==Deal_Type]
+            print (Start)
             SAL_ref=Start['INV_ref'].iloc[0]
+            print("SAL_ref = ")
+            print(SAL_ref)
             Unit_ref=Start['Unit_ref'].iloc[0]
         elif SAL_blank and not SAL:
             Deal_Type="BLANK"
             SAL_ref="MS"
+            print("SAL_ref = MS")
             Unit_ref=""
     return SAL_ref,Unit_ref,Deal_Type
 
@@ -316,41 +333,78 @@ def listdir_nohidden(path):
         if not f.startswith('.'):
             yield f
 
+COMPANY_REG_REGEX = re.compile(r'Company Registered in England\. Registered Office: Tesco House, Shire Park, Kestrel Way, Welwyn Garden City, AL7 1GA')
 def data_extraction_Tesco(base_path):
+    """
+    Extracts data from Tesco invoice PDFs in the given base path.
+
+    Args:
+        base_path (str): The directory containing the Tesco invoice PDFs.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the extracted invoice line items.
+    """
+    logger.info(f"Starting data extraction for Tesco from: {base_path}")
     for filename in listdir_nohidden(base_path):
+        file_path = os.path.join(base_path, filename)
         try:
-            if filename=="desktop.ini":continue
-            else:None
-            text=Read_pdf(os.path.join(base_path,filename))
-            text = re.sub(r'Company Registered in England. Registered Office: Tesco House, Shire Park, Kestrel Way, Welwyn Garden City, AL7 1GA', '', text)
-            SAL_Invoice_Type,Unit_Funding_Type,Deal_Type=Deal_Type_Check(os.path.join(base_path,filename),text)
-            print(SAL_Invoice_Type,Unit_Funding_Type,Deal_Type)
-            Invoice_No,Invoice_Date,Reference_Number=Invoice_infomation(text)
-            if Debit_or_credit(text):
-                if SAL_Invoice_Type=='PR':
-                    Promo_Information(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
-                    if Invoice_No not in check_list:
-                        Promo_information_2020(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
-                elif SAL_Invoice_Type=='MK':
-                    Marketing_Information(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
-                elif SAL_Invoice_Type=='FX':
-                    Fixed_Funding(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
-                elif SAL_Invoice_Type=='MS':
-                    Miscellaneous_Infomation(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
+            if filename == "desktop.ini":
+                continue
+
+            logger.info(f"Processing file: {filename}")
+            text = Read_pdf(file_path)
+            if not text:
+                logger.warning(f"No text extracted from {filename}. Skipping.")
+                continue
+
+            # Remove common footer
+            text = COMPANY_REG_REGEX.sub('', text)
+
+            sal_invoice_type, unit_funding_type, deal_type = Deal_Type_Check(file_path, text)
+            logger.debug(f"SAL Invoice Type: {sal_invoice_type}, Unit Funding Type: {unit_funding_type}, Deal Type: {deal_type} for {filename}")
+
+            invoice_no, invoice_date, reference_number = Invoice_infomation(text)
+            logger.debug(f"Invoice No: {invoice_no}, Date: {invoice_date}, Ref: {reference_number} for {filename}")
+
+            if invoice_no:
+                if Debit_or_credit(text):
+                    logger.debug(f"{filename} is a debit note.")
+                    if sal_invoice_type == 'PR':
+                        Promo_Information(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+                        if invoice_no not in check_list:
+                            Promo_information_2020(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+                    elif sal_invoice_type == 'MK':
+                        Marketing_Information(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+                    elif sal_invoice_type == 'FX':
+                        Fixed_Funding(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+                    elif sal_invoice_type == 'MS':
+                        Miscellaneous_Infomation(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+                    else:
+                        logger.warning(f"Unknown SAL Invoice Type: {sal_invoice_type} for {filename}. Skipping line item extraction.")
+
+                    invoice_integrity(invoice_no, filter_list(lines, invoice_no))
                 else:
-                    continue
-                invoice_integrity(Invoice_No,list(filter_list(lines,Invoice_No)))
+                    logger.debug(f"{filename} is a credit note.")
+                    Credit_Information(text, file_path, sal_invoice_type, unit_funding_type, deal_type, invoice_no, invoice_date, reference_number)
+
+                if invoice_no in check_list:
+                    try:
+                        new_file_path = os.path.join(base_path, f"{invoice_no}.pdf")
+                        if os.path.exists(file_path) and file_path != new_file_path:
+                            os.rename(file_path, new_file_path)
+                            logger.info(f"Renamed {filename} to {invoice_no}.pdf")
+                    except Exception as e:
+                        logger.error(f"Error renaming {filename}: {e}")
+                else:
+                    logger.warning(f"Invoice integrity check failed for {invoice_no} in {filename}. Not renaming.")
             else:
-                Credit_Information(text,os.path.join(base_path,filename),SAL_Invoice_Type,Unit_Funding_Type,Deal_Type,Invoice_No,Invoice_Date,Reference_Number)
-            if Invoice_No in check_list:
-                try:
-                    os.rename(os.path.join(base_path,filename),os.path.join(base_path,Invoice_No+".pdf"))
-                except:
-                    os.replace(os.path.join(base_path,filename),os.path.join(base_path,Invoice_No+".pdf"))
-            else:continue
+                logger.warning(f"Invoice number not found in {filename}. Skipping line item extraction and renaming.")
+
         except Exception as e:
-            print(e)
+            logger.error(f"An error occurred while processing {filename}: {e}", exc_info=True)
             continue
+
+    logger.info(f"Finished data extraction for Tesco from: {base_path}. Extracted {len(lines)} line items.")
     return pd.DataFrame(lines)
 
 def filter_list(list,inv_number):
@@ -398,8 +452,3 @@ def into_data_frame(lines):
 Salitix_Client_Number ="CL012"
 Salitix_Customer_Number ="TES01"
 
-######TESTING#####
-# file for testing
-base_path=r'W:/Audit/AG_Barr/Invoice Images'
-data_extraction_Tesco(base_path)
-into_data_frame(lines)

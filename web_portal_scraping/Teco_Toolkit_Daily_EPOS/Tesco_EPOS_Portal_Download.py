@@ -99,7 +99,7 @@ def download_files(selecting_downloads):
     soup = BeautifulSoup(driver.page_source,"html.parser")
     links=soup.find_all("a") # Links is HTML code that starts with "a" which are the "a class" links.
     selecting_downloads=[i.replace(".xlsx",".csv") for i in selecting_downloads] # Changes .xlsx to .csv so code can find it in HTML code
-    #DownloadCount = 0 # JR added int variable to fix bug. If the portal loads without loading generated file links for download, the "links" variable won't hold any values and the code will skip the while loop.
+    DownloadCount = 0 # JR added int variable to fix bug. If the portal loads without loading generated file links for download, the "links" variable won't hold any values and the code will skip the while loop.
     for i in links: # Loops through every "a class" HTML code (download links)
         if i.text in selecting_downloads: # if the text of the HTML code is in the selecting_downloads list, it will enter the while loop
             while True:
@@ -110,7 +110,7 @@ def download_files(selecting_downloads):
                     time.sleep(70)
                     driver.find_element(By.ID,i.get('id')) # Waits for the portal to still be on the same page. If not, it will raise an exception.
                     print ("Portal still on the same page") # TEMP FOR DEBUG
-                    #DownloadCount += 1
+                    DownloadCount += 1
                     break # iterates to next i element
                 except Exception as e:
                     print("Error in downloading file " + i.text)
@@ -119,8 +119,8 @@ def download_files(selecting_downloads):
                     WebDriverWait(driver,30).until(EC.presence_of_element_located((By.ID,"downloadedReports")))
                     driver.find_element(By.ID,'downloadedReports').click()
                     continue # stays on this i element until the file is downloaded
-        #if DownloadCount == 0:
-        #    download_files(selecting_downloads) # If no files are downloaded, it will call the function again to try to download the files again
+    if DownloadCount == 0:
+        download_files(selecting_downloads) # If no files are downloaded, it will call the function again to try to download the files again
 
 def CSV_to_Excels():
     time.sleep(40)

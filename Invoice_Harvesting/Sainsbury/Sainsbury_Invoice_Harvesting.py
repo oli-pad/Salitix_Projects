@@ -3,6 +3,7 @@ import os
 import re
 import pdfplumber
 
+# This script is used to split PDF files, extract invoice numbers, and merge them based on the invoice number.
 def file_splitter(base_path):
     for filename in listdir_nohidden(base_path):
         print(filename)
@@ -18,6 +19,7 @@ def listdir_nohidden(path):
         if not f.startswith('.'):
             yield f
 
+# This function is used to define the PDFs in the specified directory and extract invoice numbers from them.
 filenames=[]
 Invoice_Nos=[]
 def define_pdfs(base_path):
@@ -29,7 +31,7 @@ def define_pdfs(base_path):
         filenames.append(filename)
         Invoice_Nos.append(Invoice_No)
 
-
+# Text is the invoice number. This function is called from the define_pdfs function.
 Invoice_No_re=re.compile(r'Invoice Number[:;] (.*)')
 def Invoice_Number(text):
     for line in text.split('\n'):
@@ -42,6 +44,7 @@ def Invoice_Number(text):
             return Invoice_No
     return "T&C"
 
+# This function reads the PDF file and extracts the text from it. Called from the define_pdfs function.
 def Read_pdf(file):
     pdf_text=''
     with pdfplumber.open(file) as pdf:
@@ -51,6 +54,7 @@ def Read_pdf(file):
             pdf_text+=text
     return pdf_text
 
+# This function merges the PDF files based on the invoice number. It checks for duplicates and creates a new PDF file for each unique invoice number.
 merged=[]
 def unique_files(base_path,filenames,Invoice_Nos):
     for i in range(len(filenames)):

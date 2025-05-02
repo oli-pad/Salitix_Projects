@@ -43,7 +43,7 @@ def Move_files(client_name,client_number):
     NLF_files = [i for i in file_list if i.startswith('NLF')]
     CPC_files = [i for i in file_list if i.startswith('CPC')]
     folders_exist(client_name)
-    for i in PRF_files:
+    for i in file_list:
         try:
             shutil.copy2(r'C:\Users\python\Downloads\{}'.format(i),
                         r'W:\Audit\{}\Documentation\Sainsbury_Salesforce\Promo Schedule\PRF\{}'.format(client_name, i))

@@ -217,6 +217,7 @@ def cpc_adding(df1,df2):
 def data_extraction(path):
     for filename in listdir_nohidden(path):
         if filename=="Thumbs.db":continue
+        if filename.endswith('.pdf')==False:continue
         print(filename)
         Data_Source=filename
         sainos_promo_reader(os.path.join(path,filename),Data_Source)

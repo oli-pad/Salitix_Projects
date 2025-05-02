@@ -26,8 +26,7 @@ def login(url,usernameId, username, passwordId, password, submit_buttonId):
    driver.find_element(By.ID,passwordId).send_keys(password)
    time.sleep(10)
    driver.find_element(By.XPATH,"//input[@value='Login']").click()
-   time.sleep(5)
-
+   time.sleep(60)
 
 def new_line_form():
     driver.find_element(By.XPATH,"//a[@title='New Lines Tab']").click()
@@ -179,7 +178,9 @@ def CPC_download_pdf(soup):
 
 def promotion_form():
     driver.find_element(By.XPATH,"//a[@title='Promotion Forms Tab']").click()
+    time.sleep(10)
     driver.find_element(By.XPATH,"//input[@name='go']").click()
+    time.sleep(10)
 
 def PRF_table_status(soup):
     PRF_df=pd.DataFrame(columns=['Promotion Form Name', 'PRF Stage'])
@@ -259,16 +260,18 @@ login(sainsbury_salesforce_webpage_login,"username",email,"password",password,"L
 
 # JR 21/02/25 TEMPORARILY commented out line below that calls function new_line_form() on line 77 because it caused an error due to nothing on that section
 # new_line_form()
-logged_in_salesforce=driver.page_source
-soup = BeautifulSoup(logged_in_salesforce, "html.parser")
+# logged_in_salesforce=driver.page_source
+# soup = BeautifulSoup(logged_in_salesforce, "html.parser")
 # JR 21/02/25 TEMPORARILY commented out line below that calls function NLF_download_pdf() on line 77 because it caused an error due to nothing on that section
 # NLF_download_pdf(soup)
-driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
+
+# driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
 # JR 14/01/25 commented out line below that calls function cost_price_change() on line 112 because it caused an error and we don't get pricing data from Sainsbury's
 # cost_price_change()
-#logged_in_salesforce=driver.page_source
-#soup = BeautifulSoup(logged_in_salesforce, "html.parser")
-#CPC_download_pdf(soup)
+# logged_in_salesforce=driver.page_source
+# soup = BeautifulSoup(logged_in_salesforce, "html.parser")
+# CPC_download_pdf(soup)
+
 driver.get("https://sainsburys-eforms.my.salesforce.com/home/home.jsp")
 promotion_form()
 logged_in_salesforce=driver.page_source
